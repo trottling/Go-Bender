@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type Config struct {
@@ -27,5 +28,8 @@ func (c *Config) Read(path string) error {
 	if err = jsonParser.Decode(c); err != nil {
 		return fmt.Errorf("failed to parse Сonfig: %v", err)
 	}
+
+	c.Keys.VulnersApiKey = strings.TrimSpace(c.Keys.VulnersApiKey)
+
 	return nil
 }
