@@ -1,0 +1,9 @@
+{
+  "keys": {
+    "vulners_api_key": ""
+  },
+  "threads": {
+    "port_scanner": 100,
+    "network": 100
+  }
+}
