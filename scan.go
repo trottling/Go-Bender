@@ -2,19 +2,23 @@ package main
 
 import (
 	"Go-Bender/modules/linux"
+	"Go-Bender/modules/multi_platform"
 	"Go-Bender/modules/windows"
 	"errors"
 	"runtime"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
 )
 
 type Scanner struct {
+	wg           sync.WaitGroup
 	config       Config
 	args         Args
 	log          *log.Logger
 	WinScanner   windows.WinScanner
 	LinuxScanner linux.LinScanner
+	MultiScanner multi_platform.MultiScanner
 }
 
 func (scanner *Scanner) Init() error {
@@ -22,20 +26,24 @@ func (scanner *Scanner) Init() error {
 
 	// Logger
 	scanner.log = GetLogger()
+	scanner.log.Info("Initializing scanner...")
 
 	// Run arguments
+	scanner.log.Info("Loading run arguments")
 	scanner.args = Args{}
 	if err = scanner.args.Get(); err != nil {
 		return err
 	}
 
 	// Json config from file
+	scanner.log.Info("Loading config")
 	scanner.config = Config{}
 	if err = scanner.config.Read(scanner.args.ConfigPath); err != nil {
 		return err
 	}
 
 	// Check Vulners key
+	scanner.log.Info("Checking vulners key")
 	res, err := CheckVulnersKey(scanner.config.Keys.VulnersApiKey)
 	if err != nil {
 		return err
@@ -48,20 +56,20 @@ func (scanner *Scanner) Init() error {
 }
 
 func (scanner *Scanner) Scan() {
-	// Initial scanner
-	if err := scanner.Init(); err != nil {
-		scanner.log.Fatalf("Cannot run scanner: %s", err)
+	// Init scanner
+	err := scanner.Init()
+	if err != nil {
+		scanner.log.Fatal(err)
 	}
 
-	// Run scan
+	scanner.MultiScanner.Scan()
+
 	switch runtime.GOOS {
-	case "linux":
-		scanner.LinuxScanner = linux.LinScanner{}
-		scanner.LinuxScanner.Scan()
 	case "windows":
-		scanner.WinScanner = windows.WinScanner{}
 		scanner.WinScanner.Scan()
-	default:
-		scanner.log.Fatalf("Cannot run scanner on this OS: %s", runtime.GOOS)
+	case "linux":
+		scanner.LinuxScanner.Scan()
 	}
+
+	scanner.wg.Wait()
 }

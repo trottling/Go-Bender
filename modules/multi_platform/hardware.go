@@ -1,4 +1,4 @@
-package windows
+package multi_platform
 
 import (
 	"bytes"
@@ -16,12 +16,12 @@ type Hardware struct {
 	Virtualization string `json:"Virtualization"`
 }
 
-func (s *WinScanner) HardwareScan() {
+func (s *MultiScanner) HardwareScan() {
 	go s.CheckVirtualization()
 	go s.GetMachineComponents()
 }
 
-func (s *WinScanner) CheckVirtualization() {
+func (s *MultiScanner) CheckVirtualization() {
 	s.wg.Add(1)
 	defer s.wg.Done()
 
@@ -42,7 +42,7 @@ func (s *WinScanner) CheckVirtualization() {
 	}
 }
 
-func (s *WinScanner) GetMachineComponents() {
+func (s *MultiScanner) GetMachineComponents() {
 	s.wg.Add(1)
 	defer s.wg.Done()
 

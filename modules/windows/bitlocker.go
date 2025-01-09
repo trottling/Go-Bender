@@ -7,19 +7,11 @@ import (
 	"strconv"
 
 	wapi "github.com/iamacarpet/go-win64api"
-	"github.com/matishsiao/goInfo"
 )
 
-type Os struct {
-	Platform  string `json:"Platform"`
-	OS        string `json:"Os"`
-	Kernel    string `json:"Kernel"`
-	Core      string `json:"Core"`
-	Bitlocker struct {
-		Drives []BitlockerDrive `json:"Drives"`
-	} `json:"Bitlocker"`
+type Bitlocker struct {
+	Drives []BitlockerDrive `json:"Drives"`
 }
-
 type BitlockerDrive struct {
 	Drive   string `json:"Drive"`
 	Status  string `json:"Status"`
@@ -27,27 +19,7 @@ type BitlockerDrive struct {
 	Flags   string `json:"Encryption flags"`
 }
 
-func (s *WinScanner) OsScan() {
-	go s.GetOsInfo()
-	go s.CheckBitlocker()
-}
-
-func (s *WinScanner) GetOsInfo() {
-	s.wg.Add(1)
-	defer s.wg.Done()
-
-	gi, err := goInfo.GetInfo()
-	if err != nil {
-		s.Result.ScanErrors = append(s.Result.ScanErrors, fmt.Sprintf("Error getting OS info: %s", err))
-	} else {
-		s.Result.Os.Kernel = gi.Kernel
-		s.Result.Os.Core = gi.Core
-		s.Result.Os.Platform = gi.Platform
-		s.Result.Os.OS = gi.OS
-	}
-}
-
-func (s *WinScanner) CheckBitlocker() {
+func (s *WinScanner) BitlockerScan() {
 	s.wg.Add(1)
 	defer s.wg.Done()
 
@@ -63,7 +35,7 @@ func (s *WinScanner) CheckBitlocker() {
 			s.Result.ScanErrors = append(s.Result.ScanErrors, fmt.Sprintf("Error checking bitlocker: Drive %s: %s", drive, err))
 			continue
 		}
-		s.Result.Os.Bitlocker.Drives = append(s.Result.Os.Bitlocker.Drives, BitlockerDrive{
+		s.Result.Bitlocker.Drives = append(s.Result.Bitlocker.Drives, BitlockerDrive{
 			Drive:   drive,
 			Status:  DecryptBitLockerStatus(pr.ConversionStatus),
 			EncPerc: strconv.Itoa(int(pr.EncryptionPercentage)),

@@ -1,4 +1,4 @@
-package windows
+package multi_platform
 
 import (
 	"fmt"
@@ -15,14 +15,14 @@ type Network struct {
 	MacAddress      string `json:"Mac address"`
 }
 
-func (s *WinScanner) NetworkScan() {
+func (s *MultiScanner) NetworkScan() {
 	go s.GetLocalAddress()
 	go s.GetRemoteAddress()
 	go s.GetMacAddress()
 	go s.CheckFirewall()
 }
 
-func (s *WinScanner) GetLocalAddress() {
+func (s *MultiScanner) GetLocalAddress() {
 	s.wg.Add(1)
 	defer s.wg.Done()
 
@@ -39,7 +39,7 @@ func (s *WinScanner) GetLocalAddress() {
 
 	s.Result.Network.Local = conn.LocalAddr().(*net.UDPAddr).IP.String()
 }
-func (s *WinScanner) GetRemoteAddress() {
+func (s *MultiScanner) GetRemoteAddress() {
 	s.wg.Add(1)
 	defer s.wg.Done()
 
@@ -57,7 +57,7 @@ func (s *WinScanner) GetRemoteAddress() {
 	}
 
 }
-func (s *WinScanner) GetMacAddress() {
+func (s *MultiScanner) GetMacAddress() {
 	s.wg.Add(1)
 	defer s.wg.Done()
 
@@ -75,7 +75,7 @@ func (s *WinScanner) GetMacAddress() {
 	}
 	s.Result.Network.MacAddress = strings.Join(as, ":")
 }
-func (s *WinScanner) CheckFirewall() {
+func (s *MultiScanner) CheckFirewall() {
 	s.wg.Add(1)
 	defer s.wg.Done()
 }
