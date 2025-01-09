@@ -11,7 +11,7 @@ type Args struct {
 }
 
 func (args *Args) Get() error {
-	if err := arg.Parse(&args); err != nil {
+	if err := arg.Parse(args); err != nil {
 		return fmt.Errorf("arguments parse error: %w", err)
 	}
 	return nil
