@@ -5,14 +5,17 @@ import "sync"
 type WinScanner struct {
 	wg         sync.WaitGroup
 	VulnersKey string
-	Result     struct {
-		Bitlocker  Bitlocker `json:"Bitlocker"`
-		ScanErrors []string  `json:"ScanErrors"`
-	}
+	Result     WinScannerResult
 }
 
-func (s *WinScanner) Scan() {
+type WinScannerResult struct {
+	Bitlocker  Bitlocker `json:"Bitlocker"`
+	ScanErrors []string  `json:"ScanErrors"`
+}
+
+func (s *WinScanner) Scan() WinScannerResult {
 	go s.BitlockerScan()
 
 	s.wg.Wait()
+	return s.Result
 }

@@ -19,6 +19,13 @@ type Scanner struct {
 	WinScanner   windows.WinScanner
 	LinuxScanner linux.LinScanner
 	MultiScanner multi_platform.MultiScanner
+	ScanResult   ScanResult
+}
+
+type ScanResult struct {
+	Multi   multi_platform.MultiScannerResult `json:"Multi"`
+	Windows windows.WinScannerResult          `json:"Windows,omitempty"`
+	Linux   linux.LinScannerResult            `json:"Linux,omitempty"`
 }
 
 func (scanner *Scanner) Init() error {
@@ -62,13 +69,17 @@ func (scanner *Scanner) Scan() {
 		scanner.log.Fatal(err)
 	}
 
-	scanner.MultiScanner.Scan()
+	scanner.WinScanner.VulnersKey = scanner.config.Keys.VulnersApiKey
+	scanner.LinuxScanner.VulnersKey = scanner.config.Keys.VulnersApiKey
+
+	// Multiplatform scan
+	scanner.ScanResult.Multi = scanner.MultiScanner.Scan()
 
 	switch runtime.GOOS {
 	case "windows":
-		scanner.WinScanner.Scan()
+		scanner.ScanResult.Windows = scanner.WinScanner.Scan()
 	case "linux":
-		scanner.LinuxScanner.Scan()
+		scanner.ScanResult.Linux = scanner.LinuxScanner.Scan()
 	}
 
 	scanner.wg.Wait()
