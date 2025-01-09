@@ -1,9 +1,9 @@
-package main
+package src
 
 import (
-	"Go-Bender/modules/linux"
-	"Go-Bender/modules/multi_platform"
-	"Go-Bender/modules/windows"
+	"Go-Bender/src/modules/linux"
+	"Go-Bender/src/modules/multi_platform"
+	"Go-Bender/src/modules/windows"
 	"errors"
 	"runtime"
 	"sync"

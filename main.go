@@ -1,6 +1,8 @@
 package main
 
+import "Go-Bender/src"
+
 func main() {
-	s := Scanner{}
+	s := src.Scanner{}
 	s.Scan()
 }
