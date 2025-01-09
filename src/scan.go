@@ -13,9 +13,10 @@ import (
 
 type Scanner struct {
 	wg           sync.WaitGroup
+	log          *log.Logger
+	ports        []*PortInfo
 	config       Config
 	args         Args
-	log          *log.Logger
 	WinScanner   windows.WinScanner
 	LinuxScanner linux.LinScanner
 	MultiScanner multi_platform.MultiScanner
@@ -57,6 +58,12 @@ func (scanner *Scanner) Init() error {
 	}
 	if !res {
 		return errors.New("vulners api key is not valid")
+	}
+
+	// Ports info database
+	scanner.log.Info("Loading ports database")
+	if err = scanner.LoadPortsDB(); err != nil {
+		return err
 	}
 
 	return nil

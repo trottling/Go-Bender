@@ -8,6 +8,7 @@ import (
 
 type Args struct {
 	ConfigPath string `arg:"required,-c,--config" help:"config file path"`
+	PortsPath  string `arg:"required,-p,--ports" help:"ports csv file path"`
 }
 
 func (args *Args) Get() error {
