@@ -6,7 +6,7 @@ type LinScanner struct {
 }
 
 type LinScannerResult struct {
-	ScanErrors []string `json:"ScanErrors"`
+	ScanErrors []string `json:"ScanErrors,omitempty"`
 }
 
 func (s *LinScanner) Scan() LinScannerResult {

@@ -10,7 +10,8 @@ func (scanner *Scanner) GetLogger() *log.Logger {
 	Log := log.New()
 	Log.SetOutput(os.Stdout)
 	Log.SetFormatter(&log.TextFormatter{
-		ForceColors:     true,
-		TimestampFormat: "15-04-05"})
+		ForceColors:  true,
+		PadLevelText: true,
+	})
 	return Log
 }

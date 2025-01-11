@@ -9,17 +9,15 @@ import (
 )
 
 type Network struct {
-	Local           string `json:"Local IP"`
-	Remote          string `json:"Remote IP"`
-	FirewallEnabled string `json:"Firewall enabled"`
-	MacAddress      string `json:"Mac address"`
+	Local      string `json:"Local IP"`
+	Remote     string `json:"Remote IP"`
+	MacAddress string `json:"Mac address"`
 }
 
 func (s *MultiScanner) NetworkScan() {
 	go s.GetLocalAddress()
 	go s.GetRemoteAddress()
 	go s.GetMacAddress()
-	go s.CheckFirewall()
 }
 
 func (s *MultiScanner) GetLocalAddress() {
@@ -39,6 +37,7 @@ func (s *MultiScanner) GetLocalAddress() {
 
 	s.Result.Network.Local = conn.LocalAddr().(*net.UDPAddr).IP.String()
 }
+
 func (s *MultiScanner) GetRemoteAddress() {
 	s.wg.Add(1)
 	defer s.wg.Done()
@@ -57,6 +56,7 @@ func (s *MultiScanner) GetRemoteAddress() {
 	}
 
 }
+
 func (s *MultiScanner) GetMacAddress() {
 	s.wg.Add(1)
 	defer s.wg.Done()
@@ -74,8 +74,4 @@ func (s *MultiScanner) GetMacAddress() {
 		}
 	}
 	s.Result.Network.MacAddress = strings.Join(as, ":")
-}
-func (s *MultiScanner) CheckFirewall() {
-	s.wg.Add(1)
-	defer s.wg.Done()
 }

@@ -10,7 +10,7 @@ import (
 func (s *WinScanner) ScanSoftware() {
 	s.wg.Add(1)
 	defer s.wg.Done()
-	softList, ok := s.GetSoftwareList()
+	_, ok := s.GetSoftwareList()
 	if !ok {
 		return
 	}

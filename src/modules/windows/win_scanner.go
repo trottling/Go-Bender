@@ -1,6 +1,9 @@
 package windows
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type WinScanner struct {
 	wg         sync.WaitGroup
@@ -11,12 +14,14 @@ type WinScanner struct {
 type WinScannerResult struct {
 	Bitlocker  Bitlocker `json:"Bitlocker"`
 	Firewall   Firewall  `json:"Firewall"`
-	ScanErrors []string  `json:"ScanErrors"`
+	ScanErrors []string  `json:"ScanErrors,omitempty"`
 }
 
 func (s *WinScanner) Scan() WinScannerResult {
 	go s.BitlockerScan()
 	go s.CheckFirewall()
+
+	time.Sleep(1 * time.Second)
 
 	s.wg.Wait()
 	return s.Result

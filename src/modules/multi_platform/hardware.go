@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"runtime"
+	"strings"
 
 	"github.com/jaypipes/ghw"
 )
@@ -13,11 +15,13 @@ type Hardware struct {
 	Gpu            string `json:"Gpu"`
 	Ram            string `json:"Ram"`
 	Storage        string `json:"Storage"`
-	Virtualization string `json:"Virtualization"`
+	Virtualization string `json:"Virtualization,omitempty"`
 }
 
 func (s *MultiScanner) HardwareScan() {
-	go s.CheckVirtualization()
+	if runtime.GOOS == "windows" {
+		go s.CheckVirtualization()
+	}
 	go s.GetMachineComponents()
 }
 
@@ -50,14 +54,22 @@ func (s *MultiScanner) GetMachineComponents() {
 	if err != nil {
 		s.Result.ScanErrors = append(s.Result.ScanErrors, fmt.Sprintf("Error getting machine components (CPU): %s", err))
 	} else {
-		s.Result.Hardware.Cpu = cpu.String()
+		var res []string
+		for _, c := range cpu.Processors {
+			res = append(res, fmt.Sprintf("%s %s", c.Vendor, c.Model))
+		}
+		s.Result.Hardware.Cpu = strings.Join(res, " | ")
 	}
 
 	gpu, err := ghw.GPU()
 	if err != nil {
 		s.Result.ScanErrors = append(s.Result.ScanErrors, fmt.Sprintf("Error getting machine components (GPU): %s", err))
 	} else {
-		s.Result.Hardware.Gpu = gpu.String()
+		var res []string
+		for _, g := range gpu.GraphicsCards {
+			res = append(res, fmt.Sprintf("%s %s", g.DeviceInfo.Vendor, g.DeviceInfo.Product))
+		}
+		s.Result.Hardware.Gpu = strings.Join(res, " | ")
 	}
 
 	memory, err := ghw.Memory()
@@ -71,6 +83,10 @@ func (s *MultiScanner) GetMachineComponents() {
 	if err != nil {
 		s.Result.ScanErrors = append(s.Result.ScanErrors, fmt.Sprintf("Error getting machine components (Storage): %s", err))
 	} else {
-		s.Result.Hardware.Storage = storage.String()
+		var res []string
+		for _, s := range storage.Disks {
+			res = append(res, fmt.Sprintf("%s %s %s", s.Name, s.Vendor, s.Model))
+		}
+		s.Result.Hardware.Storage = strings.Join(res, " | ")
 	}
 }

@@ -14,7 +14,6 @@ type Os struct {
 }
 
 func (s *MultiScanner) OsScan() {
-	s.wg.Add(1)
 	defer s.wg.Done()
 
 	gi, err := goInfo.GetInfo()

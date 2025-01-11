@@ -17,18 +17,18 @@ type Ports struct {
 }
 
 type PortInfo struct {
-	ServiceName       string `csv:"Service Name" json:"Service Name"`
 	PortNumber        int    `csv:"Port Number" json:"Port Number"`
-	TransportProtocol string `csv:"Transport Protocol" json:"Transport Protocol"`
-	Description       string `csv:"Description" json:"Description"`
-	Assignee          string `csv:"Assignee" json:"Assignee"`
-	Contact           string `csv:"Contact" json:"Contact"`
-	RegistrationDate  string `csv:"Registration Date" json:"Registration Date"`
-	ModificationDate  string `csv:"Modification Date" json:"Modification Date"`
-	Reference         string `csv:"Reference" json:"Reference"`
-	ServiceCode       string `csv:"Service Code" json:"Service Code"`
-	UnauthorizedUse   string `csv:"Unauthorized Use Reported" json:"Unauthorized Use"`
-	AssignmentNotes   string `csv:"Assignment Notes" json:"Assignment Notes"`
+	ServiceName       string `csv:"Service Name" json:"Service Name,omitempty"`
+	TransportProtocol string `csv:"Transport Protocol" json:"Transport Protocol,omitempty"`
+	Description       string `csv:"Description" json:"Description,omitempty"`
+	Assignee          string `csv:"Assignee" json:"Assignee,omitempty"`
+	Contact           string `csv:"Contact" json:"Contact,omitempty"`
+	RegistrationDate  string `csv:"Registration Date" json:"Registration Date,omitempty"`
+	ModificationDate  string `csv:"Modification Date" json:"Modification Date,omitempty"`
+	Reference         string `csv:"Reference" json:"Reference,omitempty"`
+	ServiceCode       string `csv:"Service Code" json:"Service Code,omitempty"`
+	UnauthorizedUse   string `csv:"Unauthorized Use Reported" json:"Unauthorized Use,omitempty"`
+	AssignmentNotes   string `csv:"Assignment Notes" json:"Assignment Notes,omitempty"`
 }
 
 func (s *MultiScanner) PortsScan() {

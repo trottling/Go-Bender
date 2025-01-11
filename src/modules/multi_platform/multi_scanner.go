@@ -2,6 +2,7 @@ package multi_platform
 
 import (
 	"sync"
+	"time"
 
 	"github.com/projectdiscovery/naabu/v2/pkg/runner"
 )
@@ -18,7 +19,7 @@ type MultiScannerResult struct {
 	Hardware   Hardware `json:"Hardware"`
 	Network    Network  `json:"Network"`
 	Ports      Ports    `json:"Ports"`
-	ScanErrors []string `json:"ScanErrors"`
+	ScanErrors []string `json:"ScanErrors,omitempty"`
 }
 
 func (s *MultiScanner) Scan() MultiScannerResult {
@@ -26,6 +27,8 @@ func (s *MultiScanner) Scan() MultiScannerResult {
 	go s.HardwareScan()
 	go s.NetworkScan()
 	go s.PortsScan()
+
+	time.Sleep(1 * time.Second)
 
 	s.wg.Wait()
 	return s.Result
