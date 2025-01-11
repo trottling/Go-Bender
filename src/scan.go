@@ -8,19 +8,21 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/projectdiscovery/naabu/v2/pkg/runner"
 	log "github.com/sirupsen/logrus"
 )
 
 type Scanner struct {
-	wg           sync.WaitGroup
-	log          *log.Logger
-	ports        []*PortInfo
-	config       Config
-	args         Args
-	WinScanner   windows.WinScanner
-	LinuxScanner linux.LinScanner
-	MultiScanner multi_platform.MultiScanner
-	ScanResult   ScanResult
+	wg                 sync.WaitGroup
+	log                *log.Logger
+	portsInfo          []*multi_platform.PortInfo
+	config             Config
+	args               Args
+	portScannerOptions runner.Options
+	WinScanner         windows.WinScanner
+	LinuxScanner       linux.LinScanner
+	MultiScanner       multi_platform.MultiScanner
+	ScanResult         ScanResult
 }
 
 type ScanResult struct {
@@ -33,7 +35,7 @@ func (scanner *Scanner) Init() error {
 	var err error
 
 	// Logger
-	scanner.log = GetLogger()
+	scanner.log = scanner.GetLogger()
 	scanner.log.Info("Initializing scanner...")
 
 	// Run arguments
@@ -66,6 +68,16 @@ func (scanner *Scanner) Init() error {
 		return err
 	}
 
+	// Load port scanner options
+	scanner.log.Info("Loading port scanner options")
+	scanner.portScannerOptions = scanner.LoadScannerOptions()
+
+	scanner.WinScanner.VulnersKey = scanner.config.Keys.VulnersApiKey
+	scanner.LinuxScanner.VulnersKey = scanner.config.Keys.VulnersApiKey
+
+	scanner.MultiScanner.PortsScannerOptions = scanner.portScannerOptions
+	scanner.MultiScanner.PortsInfo = scanner.portsInfo
+
 	return nil
 }
 
@@ -75,9 +87,6 @@ func (scanner *Scanner) Scan() {
 	if err != nil {
 		scanner.log.Fatal(err)
 	}
-
-	scanner.WinScanner.VulnersKey = scanner.config.Keys.VulnersApiKey
-	scanner.LinuxScanner.VulnersKey = scanner.config.Keys.VulnersApiKey
 
 	// Multiplatform scan
 	scanner.ScanResult.Multi = scanner.MultiScanner.Scan()

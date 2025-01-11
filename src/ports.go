@@ -1,27 +1,14 @@
 package src
 
 import (
+	"Go-Bender/src/modules/multi_platform"
 	"fmt"
 	"os"
 
 	"github.com/gocarina/gocsv"
+	"github.com/projectdiscovery/goflags"
+	"github.com/projectdiscovery/naabu/v2/pkg/runner"
 )
-
-// PortInfo struct (correct field names)
-type PortInfo struct {
-	ServiceName       string `csv:"Service Name"`
-	PortNumber        int    `csv:"Port Number"`
-	TransportProtocol string `csv:"Transport Protocol"`
-	Description       string `csv:"Description"`
-	Assignee          string `csv:"Assignee"`
-	Contact           string `csv:"Contact"`
-	RegistrationDate  string `csv:"Registration Date"`
-	ModificationDate  string `csv:"Modification Date"`
-	Reference         string `csv:"Reference"`
-	ServiceCode       string `csv:"Service Code"`
-	UnauthorizedUse   string `csv:"Unauthorized Use Reported"`
-	AssignmentNotes   string `csv:"Assignment Notes"`
-}
 
 func (scanner *Scanner) LoadPortsDB() error {
 	file, err := os.Open(scanner.args.PortsPath)
@@ -31,11 +18,27 @@ func (scanner *Scanner) LoadPortsDB() error {
 
 	defer file.Close()
 
-	var portInfos []*PortInfo
+	var portInfos []*multi_platform.PortInfo
 	if err := gocsv.UnmarshalFile(file, &portInfos); err != nil {
 		return fmt.Errorf("failed to unmarshal ports CSV: %s", err)
 	}
 
-	scanner.ports = portInfos
+	scanner.portsInfo = portInfos
 	return nil
+}
+
+func (scanner *Scanner) LoadScannerOptions() runner.Options {
+	return runner.Options{
+		Host:         goflags.StringSlice{""},
+		OnResult:     nil,
+		Silent:       scanner.config.PortScanner.Silent,
+		Retries:      scanner.config.PortScanner.Retries,
+		Timeout:      scanner.config.PortScanner.Timeout,
+		Ports:        scanner.config.PortScanner.Ports,
+		ExcludePorts: scanner.config.PortScanner.ExcludePorts,
+		Threads:      scanner.config.PortScanner.Threads,
+		ScanType:     scanner.config.PortScanner.ScanType,
+		Proxy:        scanner.config.PortScanner.Proxy,
+		ProxyAuth:    scanner.config.PortScanner.ProxyAuth,
+	}
 }

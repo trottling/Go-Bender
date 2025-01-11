@@ -11,10 +11,18 @@ type Config struct {
 	Keys struct {
 		VulnersApiKey string `json:"vulners_api_key"`
 	} `json:"keys"`
-	Threads struct {
-		PortScanner int `json:"port_scanner"`
-		Network     int `json:"network"`
-	} `json:"threads"`
+	PortScanner struct {
+		Silent        bool   `json:"silent"`
+		Retries       int    `json:"retries"`
+		Timeout       int    `json:"timeout"`
+		Ports         string `json:"ports"`
+		ExcludePorts  string `json:"exclude_ports"`
+		Threads       int    `json:"threads"`
+		StatsInterval int    `json:"stats_interval"`
+		ScanType      string `json:"scan_type"`
+		Proxy         string `json:"proxy"`
+		ProxyAuth     string `json:"proxy_auth"`
+	} `json:"port_scanner"`
 }
 
 func (c *Config) Read(path string) error {
