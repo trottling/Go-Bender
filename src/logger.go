@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func GetLogger() *log.Logger {
+func (scanner *Scanner) GetLogger() *log.Logger {
 	Log := log.New()
 	Log.SetOutput(os.Stdout)
 	Log.SetFormatter(&log.TextFormatter{
